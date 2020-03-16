@@ -1019,14 +1019,14 @@ presentation = Builder.load_string('''
     #font_size: 60
 
 <ButtonTest@Button>:                   
-    pos_hint: {"right":0.9, "top":0.95}
+    #pos_hint: {"right":0.9, "top":0.95}
     #text: "[i]Test[/i]"
-    color:0,0,0,1
-    background_normal :'test.png'
-    background_down :''
+    #color:0,0,0,1
+    #background_normal :'test.png'
+    #background_down :''
     #size_hint: 0.3, 0.9
-    markup: True
-    font_size: 60
+    #markup: True
+    #font_size: 60
   
             
 <GameButton@Button>:
@@ -1097,20 +1097,22 @@ ScreenManagement:
 
         BoxLayout:
             orientation: 'vertical'
-            size_hint_y: 0.3
+            
 
             FloatLayout:                
                 Label:
                     font_size: 150
                     markup: True
-                    text: "[i]c2 DEUTSCH\\n          A1[/i]"
-                    pos_hint: {"right":1, "top":0.75}
+                    text: "[i]c2 DEUTSCH\\n    niveu A1[/i]"
+                    pos_hint: {"right":1, "top":1}
                     color: 1,1,1,1
                     size_hint: 1, 1
-        BoxLayout:
-            padding:120,200,120,500
-            orientation: 'vertical'
-            size_hint_y: 0.5
+        #BoxLayout:
+            #size_hint_y: 0.35
+            #markup: True
+            #padding:120,0,120,650
+            #orientation: 'vertical'
+            #size_hint_y: 0.5
                 
             #TextInput:
                 
@@ -1127,13 +1129,15 @@ ScreenManagement:
                 #text: 'Deutsch'
                 #multiline: False
 
-            Button:
-                text:'¿Quieres saber más sobre nosotros?'
-                background_normal: ''
-                background_color: 244/255,209/255,167/255,1
-                background_down: ''
-
-                on_press: webbrowser.open('https://www.c2deutsch.com/?gclid=EAIaIQobChMIpO30n_Ce6AIVRUPTCh2A3gDlEAAYASAAEgKjQPD_BwE')
+                Button:
+                    size_hint_y : 0.1
+                    text:'¿Quieres saber más sobre nosotros?'
+                    font_size : 40
+                    background_normal: ''
+                    background_color: 244/255,209/255,167/255,1
+                    background_down: ''
+                    pos_hint: {"right":1, "top":0.42}
+                    on_press: webbrowser.open('https://www.c2deutsch.com/?gclid=EAIaIQobChMIpO30n_Ce6AIVRUPTCh2A3gDlEAAYASAAEgKjQPD_BwE')
 
 
         BoxLayoutPage2:
@@ -2394,12 +2398,13 @@ ScreenManagement:
                 
   
         BoxLayoutPage2:
-            size_hint_y: 0.118
+            size_hint_y: 0.15
 
                     
             ButtonTest:
                 background_normal: 'prova.png'
                 background_down: 'prova.png'
+                #background_color: 244/255,209/255,167/255,1
                 #text:'nächste'
                 font_size : 80
                 on_release:
