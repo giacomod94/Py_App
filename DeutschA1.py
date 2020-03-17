@@ -76,8 +76,8 @@ class L2Screen(Screen):
         #Clock.schedule_once(lambda *args: self.load())
         
     def change(self):
-        ScreenManagement.MY_GLOBAL = '1'
-        ScreenManagement.SCREEN = 'L1'
+        ScreenManagement.MY_GLOBAL = '2'
+        ScreenManagement.SCREEN = 'L2'
         
         
     def test(self):
@@ -100,8 +100,8 @@ class L3Screen(Screen):
         #Clock.schedule_once(lambda *args: self.load())
         
     def change(self):
-        ScreenManagement.MY_GLOBAL = '1'
-        ScreenManagement.SCREEN = 'L1'
+        ScreenManagement.MY_GLOBAL = '3'
+        ScreenManagement.SCREEN = 'L3'
         
         
     def test(self):
@@ -125,8 +125,8 @@ class L4Screen(Screen):
         #Clock.schedule_once(lambda *args: self.load())
         
     def change(self):
-        ScreenManagement.MY_GLOBAL = '1'
-        ScreenManagement.SCREEN = 'L1'
+        ScreenManagement.MY_GLOBAL = '4'
+        ScreenManagement.SCREEN = 'L4'
         
         
     def test(self):
@@ -652,15 +652,92 @@ class GameScreen(Screen):
         self.solution = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')
         self.randnum = random.choice(range(len(self.solution))),random.choice(range(len(self.solution))),random.choice(range(len(self.solution))),random.choice(range(len(self.solution)))
         
+
+
+    #def save(self):
+        #self.JsonStore("A1deutsch.json").put('tito', score= self.label.text)
+#load data from json
+    def load(self):
+        if JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['perc']:
+            self.ids.perc.text = str(JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['perc'])
+        else:
+            self.ids.perc.text = '0'
+
+#write data in the json
+    def save(self):
+
+        if ScreenManagement.MY_GLOBAL == 'Verben':
+            JsonStore("A1deutsch.json").put('LEKTION '+ScreenManagement.MY_GLOBAL,Al =JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Al'], Es = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Es'] ,ex1Al = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Al'],ex1Es = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Es'],ex2Al = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Al'],ex2Es = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Es'], perc=float(self.ids.perc.text))
+
+        else:    
+            JsonStore("A1deutsch.json").put('LEKTION '+ScreenManagement.MY_GLOBAL,Al =JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Al'], Es = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Es'] , perc=float(self.ids.perc.text))
+        
+
+    def updateP(self):
+        if self.check():
+            self.ids.perc.text = str(float("{0:.2f}".format(float(self.ids.perc.text)+100/len(self.test))))
+            #self.check()
+            if float(self.ids.perc.text) >= 100:
+                self.ids.perc.text = '100'
+
+        else:
+            self.ids.perc.text = '100'
+        
+
+    def updateN(self):
+        if self.check():
+
+            self.ids.perc.text = str(float("{0:.2f}".format(float(self.ids.perc.text)-2*100/len(self.test))))
+            if float(self.ids.perc.text) <= 0:
+                self.ids.perc.text = '0'
+        else:
+            self.ids.perc.text = '100'
+
+
+
+
+    def check(self):
+        if float(self.ids.perc.text) >=100:
+            self.ids.perc.text = str(100)
+            return False
+        else:
+            return True
+
+    def noanswer(self):
+        if ((self.ids.btn0.background_normal == self.ids.btn1.background_normal) and (self.ids.btn2.background_normal == self.ids.btn3.background_normal)) :
+            self.updateN()
+ 
     
+
+
+
+    def checkword(self):
+        if self.ids.btn.text[0:10] == '[i]LEKTION':
+           self.refres()
+        
+        elif (self.ids.btn0.text[0:10] == '[i]LECCIÓN') or (self.ids.btn1.text[0:10] == '[i]LECCIÓN') or (self.ids.btn2.text[0:10] == '[i]LECCIÓN') or (self.ids.btn3.text[0:10] == '[i]LECCIÓN'):
+            self.refres()
+
+        elif self.ids.btn0.text == self.ids.btn1.text or self.ids.btn0.text == self.ids.btn2.text or self.ids.btn0.text == self.ids.btn3.text or self.ids.btn1.text == self.ids.btn2.text or self.ids.btn1.text == self.ids.btn3.text or self.ids.btn2.text == self.ids.btn3.text:
+            self.refres()
+        else:
+
+            for i in ScreenManagement.Badlist:
+                i = '[i]'+i+'[/i]'
     
+                if (self.ids.btn0.text == i) or (self.ids.btn1.text == i) or (self.ids.btn2.text == i) or (self.ids.btn3.text == i):
+                    self.refres()
+
+
     def on_click0(self):
         try:
             if self.solution.index(self.ids.btn0.text.replace('[i]','').replace('[/i]','')) == self.test.index(self.ids.btn.text.replace('[i]','').replace('[/i]','')):
                 #self.ids.btn0.text = '[color=006400][i]Sehr gut[/i][/color]!!'
                 self.ids.btn0.background_normal = 'indImageGreen.png'
                 self.ids.btn0.background_down = 'PageImageGreen.png'
+                self.updateP()
             else:
+                self.updateN()
                 #self.ids.btn0.text = '[color=cd0000][i]Sehr schlecht[/i][/color]!'
                 self.ids.btn0.background_normal = 'indImageRed.png'
                 self.ids.btn0.background_down = 'indImageRed.png'
@@ -684,7 +761,9 @@ class GameScreen(Screen):
                 #self.ids.btn1.text = '[color=006400][i]Sehr gut[/i][/color]!!'
                 self.ids.btn1.background_normal = 'indImageGreen.png'
                 self.ids.btn1.background_down = 'indImageGreen.png'
+                self.updateP()
             else:
+                self.updateN()
                 #self.ids.btn1.text = '[color=cd0000][i]Sehr schlecht[/i][/color]!'
                 self.ids.btn1.background_normal = 'indImageRed.png'
                 self.ids.btn1.background_down = 'indImageRed.png'
@@ -708,7 +787,9 @@ class GameScreen(Screen):
                 #self.ids.btn2.text = '[color=006400][i]Sehr gut[/i][/color]!!'
                 self.ids.btn2.background_normal = 'indImageGreen.png'
                 self.ids.btn2.background_down = 'indImageGreen.png'
+                self.updateP()
             else:
+                self.updateN()
                 #self.ids.btn2.text = '[color=cd0000][i]Sehr schlecht[/i][/color]!'
                 self.ids.btn2.background_normal = 'indImageRed.png'
                 self.ids.btn2.background_down = 'indImageRed.png'
@@ -732,7 +813,9 @@ class GameScreen(Screen):
                 #self.ids.btn3.text = '[color=006400][i]Sehr gut[/i][/color]!!'
                 self.ids.btn3.background_normal = 'indImageGreen.png'
                 self.ids.btn3.background_down = 'indImageGreen.png'
+                self.updateP()
             else:
+                self.updateN()
                 #self.ids.btn3.text = '[color=cd0000][i]Sehr schlecht[/i][/color]!'
                 self.ids.btn3.background_normal = 'indImageRed.png'
                 self.ids.btn3.background_down = 'indImageRed.png'
@@ -752,6 +835,7 @@ class GameScreen(Screen):
 
             
     def refres(self):
+
         self.num = random.choice(range(4))
         self.solution = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')
         self.test = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')
@@ -769,8 +853,17 @@ class GameScreen(Screen):
         self.ids.btn1.background_down = 'indImage.png'
         self.ids.btn0.background_normal = 'PageImage.png'
         self.ids.btn0.background_down = 'indImage.png'
+        self.checkword()
+        #self.load()
+        
+
 
         
+    def popp(self):
+         p = PopupP()
+         p.open()
+            
+
         
 class MyButton(Button):
     def __init__(self,**kwargs):
@@ -865,6 +958,7 @@ class PopButton(Button):
         self.markup = True
         self.background_normal = ''
         self.background_color= 244/255,209/255,167/255,1
+        self.background_down = 'PageImage.png'
         self.font_size = 70
         self.size= self.texture_size
         self.halign= 'center'
@@ -873,7 +967,7 @@ class PopButton(Button):
 
         
         try:
-            self.text = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data] +'\n\n'+ JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data]+'\n\n\n\n'+JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data] +'\n\n'+ JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data]
+            self.text = '[color=000000][i]1[i][/color]'+'\n'+JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data] +'\n\n'+ JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data]+'\n\n\n'+'[color=000000][i]2[/i][/color]'+'\n'+JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data] +'\n\n'+ JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data]
         except:
             self.text = 'da implementare'
         #self.text_size= root.width, None
@@ -888,14 +982,28 @@ class SimplePopup(Popup):
         self.id = 'pop'
         self.size_hint= 1, 1
         self.auto_dismiss= False
-        self.title= 'Beispielen (press text to go back)'
+        self.title= 'Beispielen'
         self.separator_color = 1,0.55,0,1
         self.title_font = 'Roboto'
         self.title_size = 50
         self.title_color = 1,1,1,1
         self.title_align = 'center'
-        self.content= PopButton(on_press = self.dismiss,text_size= (Window.size[0]-Window.size[0]/10, None))
+        self.content= PopButton(on_release = self.dismiss,text_size= (Window.size[0]-Window.size[0]/10, None))
         
+
+class PopupP(Popup):
+    def __init__(self,**kwargs):
+        super(PopupP,self).__init__(**kwargs)
+        #self.id = 'pop'
+        self.size_hint= 1, 1
+        self.auto_dismiss= False
+        self.title= 'Progression %'
+        self.separator_color = 1,0.55,0,1
+        self.title_font = 'Roboto'
+        self.title_size = 50
+        self.title_color = 1,1,1,1
+        self.title_align = 'center'
+        self.content= Button(on_release = self.dismiss,text_size= (Window.size[0]-Window.size[0]/10, None), text = 'Use this to see your progress',markup = True,background_normal = '',background_color= (244/255,209/255,167/255,1),background_down = 'PageImage.png',font_size = 70,halign= 'center')
 
 
 
@@ -921,6 +1029,7 @@ class ScreenManagement(ScreenManager):
     MY_GLOBAL = '1'
     SCREEN = ''
     control = '0'
+    Badlist = ['LECCIÓN','Otras palabras clave','Personal','Trabajo y Formación','Otras palabras importantes']
     #user = 'c2DEUTSCH'
     #userpassword = 'c2DEUTSCH'
     pass
@@ -939,7 +1048,7 @@ presentation = Builder.load_string('''
         #webbrowser.open('https://context.reverso.net/traduccion/aleman-espanol/'+self.text.replace('[i]','').replace('[/i]','').replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace(' -n','').replace(' -s','').replace(' -en','').replace(' -..e','').replace(' -e',''))
         #print(self.state)
 <IndexButton@Button>:
-
+    
     markup: True
     background_normal:'indImage.png'
     background_down:'PageImage.png'
@@ -1042,7 +1151,8 @@ presentation = Builder.load_string('''
 
 
     
-
+<PopupP>:
+    id:pop
 
 
 
@@ -1236,7 +1346,7 @@ ScreenManagement:
         GridLayout:
             orientation: "vertical"
             size_hint_y: 1
-            padding: 20,180,20,180
+            padding: 20,150,20,180
             height: self.minimum_height\n
             row_default_height: 60
             spacing:50,50
@@ -1326,7 +1436,7 @@ ScreenManagement:
         GridLayout:
             orientation: "vertical"
             size_hint_y: 1
-            padding: 20,180,20,180
+            padding: 20,150,20,180
             height: self.minimum_height\n
             row_default_height: 60
             spacing:50,50
@@ -2299,7 +2409,9 @@ ScreenManagement:
 <GameScreen>:
 
 	name: "Game"
-    on_pre_enter: root.refres()
+    on_pre_enter:
+        root.refres()
+        root.load()
     
     
     canvas.before:
@@ -2323,7 +2435,7 @@ ScreenManagement:
                 Back1Button:
                     on_release:
                         app.root.current = root.manager.SCREEN
-                    size_hint: 0.2, 0.8
+                    size_hint: 0.2, 1
                     pos_hint: {"right":0.2, "top":0.75}
                     #size_hint_x: 0.1
         BoxLayout:
@@ -2336,7 +2448,7 @@ ScreenManagement:
 
 
                 Label:
-                    id:btn
+                    
                     markup: True
                     font_size: 70
                     text: '[i]Was ist...?[/i]'
@@ -2348,11 +2460,14 @@ ScreenManagement:
                 Label:
                     id:btn
                     markup: True
-                    font_size: 100
+                    font_size: 90
+                    size: self.texture_size
+                    halign: 'center'
+                    text_size: (self.width-self.width/20, None)
                     text: '[i]'+root.test[root.randnum[root.num]]+'[/i]'
-                    pos_hint: {"right":0.615, "top":0}
+                    pos_hint: {"right":1, "top":0}
                     color: 1,1,1,1
-                    size_hint: 0.2, 0.1
+                    size_hint: 1, 0.1
 
 
 
@@ -2399,16 +2514,57 @@ ScreenManagement:
   
         BoxLayoutPage2:
             size_hint_y: 0.15
+            canvas.before:
+                Color:
+                    rgba: 244/255,209/255,167/255,1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
                     
-            ButtonTest:
-                background_normal: 'prova.png'
-                background_down: 'prova.png'
-                #background_color: 244/255,209/255,167/255,1
-                #text:'nächste'
-                font_size : 80
-                on_release:
-                    root.refres()
+            FloatLayout:
+                ButtonTest:
+                    background_normal: 'prova.png'
+                    background_down: 'prova.png'
+                    size_hint: 0.2, 1
+                    pos_hint: {"right":1, "top":1}
+                    #background_color: 244/255,209/255,167/255,1
+                    #text:'nächste'
+                    font_size : 80
+                    on_press:
+                        root.noanswer()
+                    on_release:
+                        root.refres()
+                        root.save()
+                        
+
+                Button:
+                    background_normal : ''
+                    background_down: ''
+                    background_color: 244/255,209/255,167/255,1
+                    markup: True
+                    color:1,1,1,1
+                    size_hint: 0.2, 1
+                    font_size: 50
+                    text: '%'
+                    pos_hint: {"right":0.4, "top":1}
+                    color: 1,1,1,1
+                    on_press: root.popp()
+                Button:
+                    id:perc
+                    background_normal : ''
+                    background_down: ''
+                    background_color: 244/255,209/255,167/255,1
+                    markup: True
+                    size_hint: 0.2, 1
+                    font_size: 100
+                    color:1,1,1,1
+                    text: '0'
+                    pos_hint: {"right":0.6, "top":1}
+                    color: 1,1,1,1
+                    on_press: root.popp()
+                    
+                    
 
             
 
@@ -2429,11 +2585,29 @@ class MainApp(App):
     
     
     
+    
     def build(self):
+        
         
         self.icon = 'icon.png'
 
         return presentation
+
+    def on_start(self):
+        #print(ScreenManagement.uno)
+        #ScreenManagement.uno+=1
+        pass
+
+    def on_pause(self):
+
+      # Here you can save data if needed
+      return True
+
+    def on_stop(self):
+        
+        #print('Saludos!')
+        pass
+      
 
 
 if __name__ == "__main__":
