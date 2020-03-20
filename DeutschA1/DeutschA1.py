@@ -17,10 +17,13 @@ from kivy.uix.recycleview import RecycleView
 from kivy.uix.button import Button
 from kivy.uix.button import Label
 #from gtts import gTTS 
-from kivy.core.audio import SoundLoader 
+#from kivy.core.audio import SoundLoader 
 import webbrowser
 from kivy.uix.popup import Popup
 from kivy.core.window import Window
+from kivy.config import Config 
+
+Config.set('graphics', 'resizable', True) 
 
 
 
@@ -654,8 +657,7 @@ class GameScreen(Screen):
         
 
 
-    #def save(self):
-        #self.JsonStore("A1deutsch.json").put('tito', score= self.label.text)
+
 #load data from json
     def load(self):
         if JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['perc']:
@@ -672,7 +674,7 @@ class GameScreen(Screen):
         else:    
             JsonStore("A1deutsch.json").put('LEKTION '+ScreenManagement.MY_GLOBAL,Al =JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Al'], Es = JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['Es'] , perc=float(self.ids.perc.text))
         
-
+#update if choose right
     def updateP(self):
         if self.check():
             self.ids.perc.text = str(float("{0:.2f}".format(float(self.ids.perc.text)+100/len(self.test))))
@@ -683,7 +685,7 @@ class GameScreen(Screen):
         else:
             self.ids.perc.text = '100'
         
-
+#update if choose wrong
     def updateN(self):
         if self.check():
 
@@ -695,14 +697,16 @@ class GameScreen(Screen):
 
 
 
-
+#check if we have complete the class
     def check(self):
         if float(self.ids.perc.text) >=100:
             self.ids.perc.text = str(100)
+            self.ids.perc.color = 0,0.55,0.22,1
             return False
         else:
             return True
 
+#no answer is the same of wrong
     def noanswer(self):
         if ((self.ids.btn0.background_normal == self.ids.btn1.background_normal) and (self.ids.btn2.background_normal == self.ids.btn3.background_normal)) :
             self.updateN()
@@ -710,7 +714,7 @@ class GameScreen(Screen):
     
 
 
-
+#if word = bad word we refres
     def checkword(self):
         if self.ids.btn.text[0:10] == '[i]LEKTION':
            self.refres()
@@ -729,6 +733,10 @@ class GameScreen(Screen):
                     self.refres()
 
 
+
+
+
+#test interaction
     def on_click0(self):
         try:
             if self.solution.index(self.ids.btn0.text.replace('[i]','').replace('[/i]','')) == self.test.index(self.ids.btn.text.replace('[i]','').replace('[/i]','')):
@@ -833,7 +841,8 @@ class GameScreen(Screen):
         except:
             self.ids.btn3.text = self.ids.btn3.text
 
-            
+
+#to update the gameScreen page          
     def refres(self):
 
         self.num = random.choice(range(4))
@@ -858,13 +867,13 @@ class GameScreen(Screen):
         
 
 
-        
+#popup to explain % in gamescreen       
     def popp(self):
          p = PopupP()
          p.open()
             
 
-        
+#button of recycleview       
 class MyButton(Button):
     def __init__(self,**kwargs):
         super(MyButton,self).__init__(**kwargs)
@@ -917,48 +926,14 @@ class MyButton(Button):
 
 
 
-
-
-
-
-       
-        
-        
-
-        #on_release: webbrowser.open('https://context.reverso.net/traduccion/aleman-espanol/'+self.text.replace('[i]','').replace('[/i]','').replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace(' -n','').replace(' -s','').replace(' -en','').replace(' -..e','').replace(' -e',''))
-        #self.sound = SoundLoader.load('welcome.wav') 
-        #if self.sound is None:
-            #print('problema1')
-            #self.sound = SoundLoader.load('welcome.wav')
-        #else:
-           # print('problema2')
-            #self.sound = SoundLoader.load('welcome.wav')
-        #self.sound.play()
-        
-        #language = 'de'.replace('[i]','').replace('[/i]','').replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace(' -n','').replace(' -s','').replace(' -en','').replace(' -..e','').replace(' -e','')
-        #myobj = gTTS(text=self.text, lang=language, slow=False)
-        #myobj.save("welcome.wav") 
-        #sound = SoundLoader.load('welcome.wav')
-        #sound.play() 
-        #print(sound.length)
-        pass
-    
-    def on_click_release(self):
-        #self.background_color = [0, 0, 1, 1]
-        
-        pass
-
-
-
-
-
+#Pupup botton
 class PopButton(Button):
     def __init__(self,**kwargs):
         super(PopButton,self).__init__(**kwargs)
         self.markup = True
         self.background_normal = ''
         self.background_color= 244/255,209/255,167/255,1
-        self.background_down = 'PageImage.png'
+        self.background_down = ''
         self.font_size = 70
         self.size= self.texture_size
         self.halign= 'center'
@@ -967,7 +942,7 @@ class PopButton(Button):
 
         
         try:
-            self.text = '[color=000000][i]1[i][/color]'+'\n'+JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data] +'\n\n'+ JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data]+'\n\n\n'+'[color=000000][i]2[/i][/color]'+'\n'+JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data] +'\n\n'+ JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data]
+            self.text = '[color=000000][u]1[/u][/color]'+'\n'+JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data] +'\n\n'+ JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex1Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data]+'\n\n\n'+'[color=000000][u]2[/u][/color]'+'\n'+JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Al'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data] +'\n\n'+ JsonStore("A1deutsch.json").get('LEKTION '+ScreenManagement.MY_GLOBAL)['ex2Es'].replace('[/color]','').replace('[color=27408b]','').replace('[color=cd0000]','').replace('\n\n\n','\n\n').split('\n\n')[PopButton.data]
         except:
             self.text = 'da implementare'
         #self.text_size= root.width, None
@@ -988,7 +963,7 @@ class SimplePopup(Popup):
         self.title_size = 50
         self.title_color = 1,1,1,1
         self.title_align = 'center'
-        self.content= PopButton(on_release = self.dismiss,text_size= (Window.size[0]-Window.size[0]/10, None))
+        self.content= PopButton(on_release = self.dismiss,text_size= (Window.size[0]-Window.size[0]/10, None))#cool part
         
 
 class PopupP(Popup):
@@ -997,31 +972,14 @@ class PopupP(Popup):
         #self.id = 'pop'
         self.size_hint= 1, 1
         self.auto_dismiss= False
-        self.title= 'Progression %'
+        self.title= 'FORTSCHRITT'
         self.separator_color = 1,0.55,0,1
         self.title_font = 'Roboto'
         self.title_size = 50
         self.title_color = 1,1,1,1
         self.title_align = 'center'
-        self.content= Button(on_release = self.dismiss,text_size= (Window.size[0]-Window.size[0]/10, None), text = 'Use this to see your progress',markup = True,background_normal = '',background_color= (244/255,209/255,167/255,1),background_down = 'PageImage.png',font_size = 70,halign= 'center')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+        self.content= Button(on_release = self.dismiss,text_size= (Window.size[0]-Window.size[0]/10, None), text = '[u]Use this to see your progress[/u]',markup = True,background_normal = '',background_color= (244/255,209/255,167/255,1),background_down = '',font_size = 70,halign= 'center')
+      
 
     
 #store = JsonStore('A1deutsch.json')
@@ -1040,6 +998,7 @@ class ScreenManagement(ScreenManager):
 presentation = Builder.load_string('''
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
 #:import webbrowser webbrowser
+#:import Window kivy.core.window.Window
 
 
 <MyButton>:
@@ -1127,15 +1086,6 @@ presentation = Builder.load_string('''
     markup: True
     #font_size: 60
 
-<ButtonTest@Button>:                   
-    #pos_hint: {"right":0.9, "top":0.95}
-    #text: "[i]Test[/i]"
-    #color:0,0,0,1
-    #background_normal :'test.png'
-    #background_down :''
-    #size_hint: 0.3, 0.9
-    #markup: True
-    #font_size: 60
   
             
 <GameButton@Button>:
@@ -1150,13 +1100,6 @@ presentation = Builder.load_string('''
 
 
 
-    
-<PopupP>:
-    id:pop
-
-
-
-        
 
     
 ScreenManagement:
@@ -1211,7 +1154,7 @@ ScreenManagement:
 
             FloatLayout:                
                 Label:
-                    font_size: 150
+                    font_size: Window.size[0]/7.2
                     markup: True
                     text: "[i]c2 DEUTSCH\\n    niveu A1[/i]"
                     pos_hint: {"right":1, "top":1}
@@ -1246,7 +1189,7 @@ ScreenManagement:
                     background_normal: ''
                     background_color: 244/255,209/255,167/255,1
                     background_down: ''
-                    pos_hint: {"right":1, "top":0.42}
+                    pos_hint: {"right":1, "top":0.37}
                     on_press: webbrowser.open('https://www.c2deutsch.com/?gclid=EAIaIQobChMIpO30n_Ce6AIVRUPTCh2A3gDlEAAYASAAEgKjQPD_BwE')
 
 
@@ -1286,27 +1229,30 @@ ScreenManagement:
         GridLayout:
             orientation: "vertical"
             size_hint_y: 1
-            padding: 40,500,40,500
+            padding: 40,Window.size[1]/4,40,Window.size[1]/4
             height: self.minimum_height\n
             row_default_height: 60
             cols:1
-            spacing:80,150
+            spacing:80,Window.size[1]/13
             
             
                 
             IndexButton:
                 font_size: 100
-                text:"[color=0a0a0a][i]A1.1[/i][/color]"
+                color: 244/255,209/255,167/255,1
+                text:"[i]A1.1[/i]"
                 on_release: 
                     app.root.current = "A11"    
             IndexButton:
                 font_size:100
-                text:"[color=0a0a0a][i]A1.2[/i][/color]"  
+                color: 244/255,209/255,167/255,1
+                text:"[i]A1.2[/i]"  
                 on_release: 
                     app.root.current = "A12"        
             IndexButton:
                 font_size: 100
-                text:"[color=0a0a0a][i]Verben[/i][/color]"
+                color: 244/255,209/255,167/255,1
+                text:"[i]Verben[/i]"
                 on_release: app.root.current = "Verben"
             
 
@@ -1346,7 +1292,7 @@ ScreenManagement:
         GridLayout:
             orientation: "vertical"
             size_hint_y: 1
-            padding: 20,150,20,180
+            padding: 20,Window.size[1]/13,20,Window.size[1]/12
             height: self.minimum_height\n
             row_default_height: 60
             spacing:50,50
@@ -1436,7 +1382,7 @@ ScreenManagement:
         GridLayout:
             orientation: "vertical"
             size_hint_y: 1
-            padding: 20,150,20,180
+            padding: 20,Window.size[1]/13,20,Window.size[1]/12
             height: self.minimum_height\n
             row_default_height: 60
             spacing:50,50
@@ -2482,7 +2428,7 @@ ScreenManagement:
                 spacing: '40dp'
                 orientation: "vertical"
                 
-                padding: 30,200,30,200
+                padding: 30,Window.size[1]/10,30,Window.size[1]/10
                 
                 row_default_height: 60
                 cols:1
@@ -2523,7 +2469,7 @@ ScreenManagement:
 
                     
             FloatLayout:
-                ButtonTest:
+                Button:
                     background_normal: 'prova.png'
                     background_down: 'prova.png'
                     size_hint: 0.2, 1
